@@ -1,23 +1,142 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaFileImage, FaFileUpload } from 'react-icons/fa';
+import firebase from 'firebase/compat/app';
 
-const products = [
-  { id: 1, name: 'Product 1', price: '$10.00', stock: 20 },
-  { id: 2, name: 'Product 2', price: '$15.00', stock: 15 },
-  { id: 3, name: 'Product 3', price: '$20.00', stock: 10 },
-  { id: 4, name: 'Product 4', price: '$25.00', stock: 5 },
-];
+import Swal from 'sweetalert2';
 
 const ViewDetails = () => {
+  const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [editedProductName, setEditedProductName] = useState('');
+  const [editedProductCategory, setEditedProductCategory] = useState('');
+  const [editedProductDescription, setEditedProductDescription] = useState('');
+  const [productImage, setProductImage] = useState(null);
+  const [productModel, setProductModel] = useState(null);
 
-  const openModal = (product) => {
+  useEffect(() => {
+    const firebaseConfig = {
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    const database = firebase.database();
+    const productsRef = database.ref('products');
+
+    const fetchData = () => {
+      productsRef.on('value', (snapshot) => {
+        const productsData = snapshot.val();
+        if (productsData) {
+          const productsArray = Object.keys(productsData).map((key) => ({
+            id: key,
+            ...productsData[key]
+          }));
+          setProducts(productsArray);
+        } else {
+          setProducts([]);
+        }
+      });
+    };
+
+    fetchData();
+
+    return () => {
+      productsRef.off('value');
+    };
+  }, []);
+
+  const openEditModal = (product) => {
     setSelectedProduct(product);
+    setEditedProductName(product.productName);
+    setEditedProductCategory(product.productCategory);
+    setEditedProductDescription(product.productDescription);
+    setProductImage(null);
+    setProductModel(null);
   };
 
-  const closeModal = () => {
+  const closeEditModal = () => {
     setSelectedProduct(null);
+  };
+
+  const handleProductNameChange = (event) => {
+    setEditedProductName(event.target.value);
+  };
+
+  const handleProductCategoryChange = (event) => {
+    setEditedProductCategory(event.target.value);
+  };
+
+  const handleProductDescriptionChange = (event) => {
+    setEditedProductDescription(event.target.value);
+  };
+
+  const handleImageUpload = (event) => {
+    const imageFile = event.target.files[0];
+    setProductImage(imageFile);
+  };
+
+  const handleModelUpload = (event) => {
+    const modelFile = event.target.files[0];
+    setProductModel(modelFile);
+  };
+
+  const updateProduct = async () => {
+    const { id } = selectedProduct;
+
+    const database = firebase.database();
+    const productRef = database.ref(`products/${id}`);
+
+    try {
+      await productRef.update({
+        productName: editedProductName,
+        productCategory: editedProductCategory,
+        productDescription: editedProductDescription
+      });
+
+      if (productImage) {
+        const imageStorageRef = firebase.storage().ref(`images/${id}`);
+        await imageStorageRef.put(productImage);
+      }
+
+      if (productModel) {
+        const modelStorageRef = firebase.storage().ref(`models/${id}`);
+        await modelStorageRef.put(productModel);
+      }
+
+      Swal.fire('Updated!', 'Product details have been updated.', 'success');
+      closeEditModal();
+    } catch (error) {
+      console.error('Error updating product:', error);
+      Swal.fire('Error!', 'Failed to update product details.', 'error');
+    }
+  };
+
+  const deleteProduct = (productId) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Once deleted, you will not be able to recover this product!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const database = firebase.database();
+        const productRef = database.ref(`products/${productId}`);
+
+        productRef
+          .remove()
+          .then(() => {
+            Swal.fire('Deleted!', 'Your product has been deleted.', 'success');
+          })
+          .catch((error) => {
+            console.error('Error deleting product:', error);
+            Swal.fire('Error!', 'Failed to delete product.', 'error');
+          });
+      }
+    });
   };
 
   return (
@@ -29,27 +148,31 @@ const ViewDetails = () => {
             <tr>
               <th className="px-4 py-3">#</th>
               <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Price</th>
-              <th className="px-4 py-3">Stock</th>
+              <th className="px-4 py-3">Category</th>
+              <th className="px-4 py-3">Description</th>
+
               <th className="px-4 py-3">Actions</th>
             </tr>
           </thead>
           <tbody className="text-gray-700">
             {products.map((product, index) => (
-              <motion.tr key={product.id} className={(index % 2 === 0) ? "bg-gray-100" : ""} whileHover={{ scale: 1.05 }}>
+              <motion.tr key={product.id} className={index % 2 === 0 ? 'bg-gray-100' : ''} whileHover={{ scale: 1.05 }}>
                 <td className="border px-4 py-2">{index + 1}</td>
-                <td className="border px-4 py-2">{product.name}</td>
-                <td className="border px-4 py-2">{product.price}</td>
-                <td className="border px-4 py-2">{product.stock}</td>
+                <td className="border px-4 py-2">{product.productName}</td>
+                <td className="border px-4 py-2">{product.productCategory}</td>
+                <td className="border px-4 py-2">{product.productDescription}</td>
+
+
                 <td className="border px-4 py-2 flex justify-center gap-2">
                   <motion.button
-                    onClick={() => openModal(product)}
+                    onClick={() => openEditModal(product)}
                     className="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded transition duration-300"
                     whileHover={{ scale: 1.1 }}
                   >
                     <FaEdit />
                   </motion.button>
                   <motion.button
+                    onClick={() => deleteProduct(product.id)}
                     className="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded transition duration-300"
                     whileHover={{ scale: 1.1 }}
                   >
@@ -61,68 +184,87 @@ const ViewDetails = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Edit Product Modal */}
       {selectedProduct && (
-        <div className="fixed z-10 inset-0 overflow-y-auto">
-          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+        <div className="fixed inset-0 z-10 overflow-y-auto bg-gray-500 bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-4 rounded-lg w-1/2">
+            <h2 className="text-xl font-bold mb-4">Edit Product</h2>
+            <div className="mb-4">
+              <label htmlFor="productName" className="block text-sm font-medium text-gray-700">
+                Product Name
+              </label>
+              <input
+                type="text"
+                id="productName"
+                name="productName"
+                value={editedProductName}
+                onChange={handleProductNameChange}
+                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+              />
             </div>
-            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
-              &#8203;
-            </span>
-            <div
-              className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="modal-headline"
-            >
-              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div className="sm:flex sm:items-start">
-                  <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
-                    <FaEdit className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
-                      Edit Product
-                    </h3>
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-500">
-                        Edit information for {selectedProduct.name}.
-                      </p>
-                      <input
-                        type="text"
-                        placeholder="Product Name"
-                        className="mt-2 p-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Price"
-                        className="mt-2 p-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Stock"
-                        className="mt-2 p-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button
-                  onClick={closeModal}
-                  type="button"
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                >
-                  Save Changes
-                </button>
-              </div>
+            <div className="mb-4">
+              <label htmlFor="productCategory" className="block text-sm font-medium text-gray-700">
+                Product Category
+              </label>
+              <input
+                type="text"
+                id="productCategory"
+                name="productCategory"
+                value={editedProductCategory}
+                onChange={handleProductCategoryChange}
+                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="productDescription" className="block text-sm font-medium text-gray-700">
+                Product Description
+              </label>
+              <textarea
+                id="productDescription"
+                name="productDescription"
+                value={editedProductDescription}
+                onChange={handleProductDescriptionChange}
+                className="mt-1 p-2 border border-gray-300 rounded-md w-full h-32"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="productImage" className="block text-sm font-medium text-gray-700">
+                Product Image
+              </label>
+              <input
+                type="file"
+                id="productImage"
+                name="productImage"
+                onChange={handleImageUpload}
+                className="mt-1"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="productModel" className="block text-sm font-medium text-gray-700">
+                Product Model
+              </label>
+              <input
+                type="file"
+                id="productModel"
+                name="productModel"
+                onChange={handleModelUpload}
+                className="mt-1"
+              />
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={updateProduct}
+                className="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded transition duration-300"
+              >
+                Update
+              </button>
+              <button
+                onClick={closeEditModal}
+                className="bg-gray-400 hover:bg-gray-600 text-white px-4 py-2 ml-2 rounded transition duration-300"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

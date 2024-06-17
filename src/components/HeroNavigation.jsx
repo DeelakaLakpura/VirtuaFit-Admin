@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faPlus, faEye, faUser, faBars } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faPlus, faEye, faUser, faBars,faMessage } from '@fortawesome/free-solid-svg-icons';
 import './style.css'; // Custom CSS for additional styling
 
 const LeftNavigation = () => {
@@ -42,11 +42,13 @@ const LeftNavigation = () => {
             </Link>
           </li>
           <li className="nav-item">
-            <Link to="/user-profile" className="nav-link">
-              <FontAwesomeIcon icon={faUser} className="nav-icon" />
-              {isOpen && <span className="nav-text">User Profile</span>}
+            <Link to="/user-fmc" className="nav-link">
+              <FontAwesomeIcon icon={faMessage} className="nav-icon" />
+              {isOpen && <span className="nav-text">Notification</span>}
             </Link>
           </li>
+         
+        
         </ul>
       </nav>
     </div>
