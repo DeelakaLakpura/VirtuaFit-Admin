@@ -20,9 +20,9 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
 
     // Set up the renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight); 
+    renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setClearColor(new THREE.Color(0xE4E4E4)); 
+    renderer.setClearColor(new THREE.Color(0xE4E4E4));
     currentMountRef.appendChild(renderer.domElement);
 
     // Set up the camera
@@ -110,13 +110,13 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
       }
     }
 
-    // Hide the introduction animation after 2.5 seconds
+    // Hide the introduction animation after 2 seconds
     const introTimer = setTimeout(() => {
       setShowIntro(false);
       if (animation) {
         animation.destroy();
       }
-    }, 2500);
+    }, 2000); // 2 seconds
 
     // Cleanup function
     return () => {
@@ -137,30 +137,14 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
       <div ref={mountRef} style={{ width: '100%', height: '100%' }}></div>
 
       {showIntro && (
-        <div
-          id="lottie-container"
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            backgroundColor: 'white',
-            padding: '20px',
-            borderRadius: '5px',
-            textAlign: 'center',
-            zIndex: 1,
-            width: '250px',
-            height: '250px',
-          }}
-        >
-          <dotlottie-player
-            src="https://lottie.host/059d5c51-e9f2-416c-ad8f-96436f8130b1/xQLWSYfpo4.json"
-            background="transparent"
-            speed="1"
-            loop
-            autoplay
-          ></dotlottie-player>
-        </div>
+        <dotlottie-player
+          src="https://lottie.host/059d5c51-e9f2-416c-ad8f-96436f8130b1/xQLWSYfpo4.json"
+          background="transparent"
+          speed="1"
+          loop
+          autoplay
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+        ></dotlottie-player>
       )}
     </div>
   );
