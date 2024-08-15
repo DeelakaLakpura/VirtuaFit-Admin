@@ -46,10 +46,11 @@ function App() {
 
   return (
     <Router>
+       <Route path="/view-model" element={<ViewModel />} />
+       <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
       <HeroNavigation />
       <Routes>
-        <Route path="/view-model" element={<ViewModel />} />
-        <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+       
         {isLoggedIn ? (
           <>
             <Route path="/" element={<Homepage />} />
