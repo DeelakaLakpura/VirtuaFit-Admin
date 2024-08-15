@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
 
 import HeroNavigation from './components/HeroNavigation';
 import Homepage from './pages/Homepage';
@@ -15,24 +14,16 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [modelUrl, setModelUrl] = useState(null);
 
+  // Component to handle model view and fetching the URL from query parameters
   function ViewModel() {
-    const { modelPath } = useParams();
+    const [searchParams] = useSearchParams();
+    const modelPath = searchParams.get('url'); // Get the 'url' query parameter
 
     useEffect(() => {
       const fetchModel = async () => {
         try {
-        
-          if (modelPath.startsWith('https://firebasestorage.googleapis.com')) {
+          if (modelPath) {
             const response = await fetch(modelPath);
-            const blob = await response.blob();
-            const url = URL.createObjectURL(blob);
-            setModelUrl(url);
-          } else {
-           
-            const storage = getStorage();
-            const storageRef = ref(storage, modelPath);
-            const downloadURL = await getDownloadURL(storageRef);
-            const response = await fetch(downloadURL);
             const blob = await response.blob();
             const url = URL.createObjectURL(blob);
             setModelUrl(url);
@@ -47,9 +38,7 @@ function App() {
       }
     }, [modelPath]);
 
-    return (
-      modelUrl ? <ModelView modelPath={modelUrl} /> : <div>Loading...</div>
-    );
+    return modelUrl ? <ModelView modelPath={modelUrl} /> : <div>Loading...</div>;
   }
 
   const handleLogin = () => {
@@ -60,8 +49,8 @@ function App() {
     <Router>
       <HeroNavigation />
       <Routes>
-        {/* This route will now capture the model URL from the path */}
-        <Route path="/view-model/:modelPath/*" element={<ViewModel />} />
+        {/* This route will now capture the 'url' query parameter from the path */}
+        <Route path="/view-model" element={<ViewModel />} />
         <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
         {isLoggedIn ? (
           <>
