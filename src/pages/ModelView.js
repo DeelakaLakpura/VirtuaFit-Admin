@@ -111,7 +111,7 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
       <div ref={mountRef} style={{ width: '100%', height: '100%' }}></div>
   
       {showIntro && (
-        <dotlottie-player
+        <dotlottie-player 
           id="lottie-container"
           src={lottieAnimationPath}
           background="transparent"

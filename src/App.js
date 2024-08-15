@@ -17,6 +17,7 @@ function App() {
   function ViewModel() {
     const [searchParams] = useSearchParams();
     const modelPath = searchParams.get('url');
+    const lottiePath = '../public/animations/introduction.json'// Assume we pass lottie animation path through query params
 
     useEffect(() => {
       const fetchModel = async () => {
@@ -37,7 +38,7 @@ function App() {
       }
     }, [modelPath]);
 
-    return modelUrl ? <ModelView modelPath={modelUrl} /> : <div>Loading...</div>;
+    return modelUrl ? <ModelView modelPath={modelUrl} lottieAnimationPath={lottiePath} /> : <div>Loading...</div>;
   }
 
   const handleLogin = () => {
@@ -46,15 +47,12 @@ function App() {
 
   return (
     <Router>
-      
       <HeroNavigation />
       <Routes>
-       
         <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
         <Route path="/view-model" element={<ViewModel />} />
         {isLoggedIn ? (
           <>
-          
             <Route path="/" element={<Homepage />} />
             <Route path="/add-product" element={<UploadDetails />} />
             <Route path="/view-product" element={<ViewDetails />} />
@@ -64,7 +62,6 @@ function App() {
         ) : (
           <Route path="/*" element={<Navigate to="/login" replace />} />
         )}
-        
       </Routes>
     </Router>
   );
