@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 
 import HeroNavigation from './components/HeroNavigation';
@@ -15,13 +15,43 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [modelUrl, setModelUrl] = useState(null);
 
-  const firebaseModelPath = "https://firebasestorage.googleapis.com/v0/b/vfit-8e85e.appspot.com/o/models%2Fold_wooden_chair.glb?alt=media&token=3e21fb15-551c-4d2c-9d96-5128b51a942d";
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+
+  return (
+    <Router>
+      <HeroNavigation />
+      <Routes>
+        <Route path="/view-model/:firebaseModelPath" element={<ModelFetcher />} />
+        <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+        {isLoggedIn ? (
+          <>
+            <Route path="/" element={<Homepage />} />
+            <Route path="/add-product" element={<UploadDetails />} />
+            <Route path="/view-product" element={<ViewDetails />} />
+            <Route path="/user-profile" element={<ProfileDetail />} />
+            <Route path="/user-fmc" element={<Sendnotifications />} />
+          </>
+        ) : (
+          <Route path="/*" element={<Navigate to="/login" replace />} />
+        )}
+      </Routes>
+    </Router>
+  );
+}
+
+function ModelFetcher() {
+  const { firebaseModelPath } = useParams();
+  const [modelUrl, setModelUrl] = useState(null);
 
   useEffect(() => {
     const fetchModel = async () => {
       try {
+        // Handle URL decoding
+        const decodedPath = decodeURIComponent(firebaseModelPath);
         const storage = getStorage();
-        const storageRef = ref(storage, firebaseModelPath);
+        const storageRef = ref(storage, decodedPath);
         const downloadURL = await getDownloadURL(storageRef);
         const response = await fetch(downloadURL);
         const blob = await response.blob();
@@ -35,31 +65,7 @@ function App() {
     fetchModel();
   }, [firebaseModelPath]);
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
-
-  return (
-    <Router>
-      <HeroNavigation />
-      <Routes>
-      <Route path="/view-model" element={modelUrl ? <ModelView modelPath={modelUrl} /> : <div>Loading...</div>} />
-        <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
-        {isLoggedIn ? (
-          <>
-            <Route path="/" element={<Homepage />} />
-            <Route path="/add-product" element={<UploadDetails />} />
-            <Route path="/view-product" element={<ViewDetails />} />
-            <Route path="/user-profile" element={<ProfileDetail />} />
-            <Route path="/user-fmc" element={<Sendnotifications />} />
-         
-          </>
-        ) : (
-          <Route path="/*" element={<Navigate to="/login" replace />} />
-        )}
-      </Routes>
-    </Router>
-  );
+  return modelUrl ? <ModelView modelPath={modelUrl} /> : <div>Loading...</div>;
 }
 
 export default App;
