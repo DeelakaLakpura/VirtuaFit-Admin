@@ -13,6 +13,44 @@ import ModelView from './pages/ModelView';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [modelUrl, setModelUrl] = useState(null);
+
+  function ViewModel() {
+    const { modelPath } = useParams();
+
+    useEffect(() => {
+      const fetchModel = async () => {
+        try {
+        
+          if (modelPath.startsWith('https://firebasestorage.googleapis.com')) {
+            const response = await fetch(modelPath);
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            setModelUrl(url);
+          } else {
+           
+            const storage = getStorage();
+            const storageRef = ref(storage, modelPath);
+            const downloadURL = await getDownloadURL(storageRef);
+            const response = await fetch(downloadURL);
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            setModelUrl(url);
+          }
+        } catch (error) {
+          console.error('Error fetching model:', error);
+        }
+      };
+
+      if (modelPath) {
+        fetchModel();
+      }
+    }, [modelPath]);
+
+    return (
+      modelUrl ? <ModelView modelPath={modelUrl} /> : <div>Loading...</div>
+    );
+  }
 
   const handleLogin = () => {
     setIsLoggedIn(true);
@@ -22,7 +60,8 @@ function App() {
     <Router>
       <HeroNavigation />
       <Routes>
-        <Route path="/view-model/:firebaseModelPath" element={<ModelFetcher />} />
+        {/* This route will now capture the model URL from the path */}
+        <Route path="/view-model/:modelPath/*" element={<ViewModel />} />
         <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
         {isLoggedIn ? (
           <>
@@ -38,33 +77,6 @@ function App() {
       </Routes>
     </Router>
   );
-}
-
-function ModelFetcher() {
-  const { firebaseModelPath } = useParams();
-  const [modelUrl, setModelUrl] = useState(null);
-
-  useEffect(() => {
-    const fetchModel = async () => {
-      try {
-        // Handle URL decoding
-        const decodedPath = decodeURIComponent(firebaseModelPath);
-        const storage = getStorage();
-        const storageRef = ref(storage, decodedPath);
-        const downloadURL = await getDownloadURL(storageRef);
-        const response = await fetch(downloadURL);
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        setModelUrl(url);
-      } catch (error) {
-        console.error('Error fetching model:', error);
-      }
-    };
-
-    fetchModel();
-  }, [firebaseModelPath]);
-
-  return modelUrl ? <ModelView modelPath={modelUrl} /> : <div>Loading...</div>;
 }
 
 export default App;
