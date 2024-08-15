@@ -51,7 +51,7 @@ function App() {
       <HeroNavigation />
       <Routes>
         {/* This route will now capture the 'url' query parameter from the path */}
-        <Route path="/view-model" element={<ViewModel />} />
+        <Route path="/view-model" element={<ViewModel  modelPath={modelUrl}/>} />
         <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
         {isLoggedIn ? (
           <>
