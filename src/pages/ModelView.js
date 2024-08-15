@@ -132,9 +132,7 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
   }, [modelPath, isRotating, showIntro, lottieAnimationPath]);
 
   // Toggle rotation
-  const handleToggleRotation = () => {
-    setIsRotating(prev => !prev);
-  };
+ 
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
