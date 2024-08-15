@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@dotlottie/player-component": "^2.7.12",
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
@@ -29,13 +30,12 @@
     "three": "^0.166.1",
     "web-vitals": "^2.1.4"
   },
-"scripts": {
-  "install": "npm install --legacy-peer-deps",
-  "start": "react-scripts start",
-  "build": "react-scripts build",
-  "test": "react-scripts test",
-  "eject": "react-scripts eject"
-},
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -58,4 +58,3 @@
     "tailwindcss": "^3.4.1"
   }
 }
- 

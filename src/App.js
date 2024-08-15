@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+
 import HeroNavigation from './components/HeroNavigation';
 import Homepage from './pages/Homepage';
 import UploadDetails from './pages/UploadDetails';
@@ -11,10 +13,29 @@ import ModelView from './pages/ModelView';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [modelUrl, setModelUrl] = useState(null);
 
-  // Function to handle login
+  const firebaseModelPath = "https://firebasestorage.googleapis.com/v0/b/vfit-8e85e.appspot.com/o/models%2Fikea_markus_office_chair.glb?alt=media&token=8bb1f7e3-841b-4c4a-b73a-67c0175e22a1";
+
+  useEffect(() => {
+    const fetchModel = async () => {
+      try {
+        const storage = getStorage();
+        const storageRef = ref(storage, firebaseModelPath);
+        const downloadURL = await getDownloadURL(storageRef);
+        const response = await fetch(downloadURL);
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setModelUrl(url);
+      } catch (error) {
+        console.error('Error fetching model:', error);
+      }
+    };
+
+    fetchModel();
+  }, [firebaseModelPath]);
+
   const handleLogin = () => {
-   
     setIsLoggedIn(true);
   };
 
@@ -22,10 +43,7 @@ function App() {
     <Router>
       <HeroNavigation />
       <Routes>
-        {/* Route for the login page */}
         <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
-
-        {/* Protected routes */}
         {isLoggedIn ? (
           <>
             <Route path="/" element={<Homepage />} />
@@ -33,14 +51,10 @@ function App() {
             <Route path="/view-product" element={<ViewDetails />} />
             <Route path="/user-profile" element={<ProfileDetail />} />
             <Route path="/user-fmc" element={<Sendnotifications />} />
-            <Route path="/view-model" element={<ModelView />} />
+            <Route path="/view-model" element={modelUrl ? <ModelView modelPath={modelUrl} /> : <div>Loading...</div>} />
           </>
         ) : (
-          // Redirect to login if not authenticated
-          <Route
-            path="/*"
-            element={<Navigate to="/login" replace />}
-          />
+          <Route path="/*" element={<Navigate to="/login" replace />} />
         )}
       </Routes>
     </Router>
