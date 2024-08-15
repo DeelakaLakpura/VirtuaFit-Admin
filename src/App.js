@@ -17,7 +17,7 @@ function App() {
   function ViewModel() {
     const [searchParams] = useSearchParams();
     const modelPath = searchParams.get('url');
-    const lottiePath = '../public/animations/introduction.json'// Assume we pass lottie animation path through query params
+    const lottiePath = '/animations/introduction.json'// Assume we pass lottie animation path through query params
 
     useEffect(() => {
       const fetchModel = async () => {
