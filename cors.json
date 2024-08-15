@@ -1,0 +1,8 @@
+[
+    {
+      "origin": ["https://virtuafit-admins.netlify.app"],
+      "method": ["GET"],
+      "maxAgeSeconds": 3600
+    }
+  ]
+  
