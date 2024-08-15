@@ -13,7 +13,6 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
 
   useEffect(() => {
     const currentMountRef = mountRef.current;
-
     if (!currentMountRef) return;
 
     // Set up the scene
