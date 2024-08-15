@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback} from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -14,7 +14,8 @@ const ModelView = ({ modelPath }) => {
 
     // Set up the scene
     const scene = new THREE.Scene();
-
+    // eslint-disable-next-line no-use-before-define
+    animate();
     // Set up the renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -72,17 +73,18 @@ const ModelView = ({ modelPath }) => {
     controls.screenSpacePanning = false;
 
     // Animation loop
-    const animate = () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const animate = useCallback(() => {
       requestAnimationFrame(animate);
-
+  
       if (modelRef.current && isRotating) {
         modelRef.current.rotation.y += 0.001;
       }
-
+  
       controls.update();
       renderer.render(scene, camera);
-    };
-    animate();
+    }, [modelRef, isRotating, controls, renderer, scene, camera]);
+  
 
     // Handle window resize
     const handleResize = () => {
