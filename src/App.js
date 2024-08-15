@@ -43,6 +43,7 @@ function App() {
     <Router>
       <HeroNavigation />
       <Routes>
+      <Route path="/view-model" element={modelUrl ? <ModelView modelPath={modelUrl} /> : <div>Loading...</div>} />
         <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
         {isLoggedIn ? (
           <>
@@ -51,7 +52,7 @@ function App() {
             <Route path="/view-product" element={<ViewDetails />} />
             <Route path="/user-profile" element={<ProfileDetail />} />
             <Route path="/user-fmc" element={<Sendnotifications />} />
-            <Route path="/view-model" element={modelUrl ? <ModelView modelPath={modelUrl} /> : <div>Loading...</div>} />
+         
           </>
         ) : (
           <Route path="/*" element={<Navigate to="/login" replace />} />
