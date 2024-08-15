@@ -2,14 +2,13 @@ import React, { useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import lottie from 'lottie-web';
 import '@dotlottie/player-component';
 
 const ModelView = ({ modelPath, lottieAnimationPath }) => {
   const mountRef = useRef(null);
   const modelRef = useRef(null);
-  const [showIntro, setShowIntro] = useState(true);
-  const animationRef = useRef(null); // Added ref for Lottie animation
+  const [showIntro] = useState(true);
+ 
 
  
   useEffect(() => {
