@@ -14,6 +14,8 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
   useEffect(() => {
     const currentMountRef = mountRef.current;
 
+    if (!currentMountRef) return;
+
     // Set up the scene
     const scene = new THREE.Scene();
 
@@ -63,7 +65,7 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
       },
       undefined,
       (error) => {
-        console.error("Error loading GLB model", error);
+        console.error("Error loading GLB model:", error);
       }
     );
 
@@ -130,9 +132,6 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
       }
     };
   }, [modelPath, isRotating, showIntro, lottieAnimationPath]);
-
-  // Toggle rotation
- 
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
