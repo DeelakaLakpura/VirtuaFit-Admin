@@ -13,7 +13,6 @@ import ModelView from './pages/ModelView';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [modelUrl, setModelUrl] = useState(null);
 
   const handleLogin = () => {
     setIsLoggedIn(true);
