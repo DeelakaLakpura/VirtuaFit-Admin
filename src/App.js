@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
-
 import HeroNavigation from './components/HeroNavigation';
 import Homepage from './pages/Homepage';
 import UploadDetails from './pages/UploadDetails';
@@ -14,10 +13,9 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [modelUrl, setModelUrl] = useState(null);
 
-  // Component to handle model view and fetching the URL from query parameters
   function ViewModel() {
     const [searchParams] = useSearchParams();
-    const modelPath = searchParams.get('url'); // Get the 'url' query parameter
+    const modelPath = searchParams.get('url');
 
     useEffect(() => {
       const fetchModel = async () => {
@@ -47,11 +45,9 @@ function App() {
 
   return (
     <Router>
-      
       <HeroNavigation />
       <Routes>
-        {/* This route will now capture the 'url' query parameter from the path */}
-        <Route path="/view-model" element={<ViewModel  modelPath={modelUrl}/>} />
+        <Route path="/view-model" element={<ViewModel />} />
         <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
         {isLoggedIn ? (
           <>
