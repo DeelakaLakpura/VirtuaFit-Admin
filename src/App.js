@@ -46,13 +46,15 @@ function App() {
 
   return (
     <Router>
-       <Route path="/view-model" element={<ViewModel />} />
+      
       <HeroNavigation />
       <Routes>
        
         <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+        <Route path="/view-model" element={<ViewModel />} />
         {isLoggedIn ? (
           <>
+          
             <Route path="/" element={<Homepage />} />
             <Route path="/add-product" element={<UploadDetails />} />
             <Route path="/view-product" element={<ViewDetails />} />
@@ -62,6 +64,7 @@ function App() {
         ) : (
           <Route path="/*" element={<Navigate to="/login" replace />} />
         )}
+        
       </Routes>
     </Router>
   );
