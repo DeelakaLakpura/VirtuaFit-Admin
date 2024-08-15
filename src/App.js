@@ -15,7 +15,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [modelUrl, setModelUrl] = useState(null);
 
-  const firebaseModelPath = "https://firebasestorage.googleapis.com/v0/b/vfit-8e85e.appspot.com/o/models%2Fikea_markus_office_chair.glb?alt=media&token=8bb1f7e3-841b-4c4a-b73a-67c0175e22a1";
+  const firebaseModelPath = "https://firebasestorage.googleapis.com/v0/b/vfit-8e85e.appspot.com/o/models%2Fold_wooden_chair.glb?alt=media&token=3e21fb15-551c-4d2c-9d96-5128b51a942d";
 
   useEffect(() => {
     const fetchModel = async () => {
