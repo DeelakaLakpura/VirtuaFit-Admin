@@ -100,7 +100,7 @@ const ModelView = ({ modelPath }) => {
       renderer.dispose();
       window.removeEventListener('resize', handleResize);
     };
-  }, [modelPath]); // Dependency array: Only re-run the effect when modelPath changes
+  }, [modelPath, isRotating]); // Dependency array: Only re-run the effect when modelPath changes
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
