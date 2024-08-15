@@ -2,14 +2,11 @@ import React, { useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import lottie from 'lottie-web';
-import '@dotlottie/player-component';
 
-const ModelView = ({ modelPath, lottieAnimationPath }) => {
+const ModelView = ({ modelPath }) => {
   const mountRef = useRef(null);
   const modelRef = useRef(null);
   const [isRotating] = useState(true);
-  const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
     const currentMountRef = mountRef.current;
@@ -95,57 +92,19 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
     };
     window.addEventListener('resize', handleResize);
 
-    // Initialize Lottie animation
-    let animation;
-    if (showIntro && lottieAnimationPath) {
-      const container = document.getElementById('lottie-container');
-      if (container) {
-        animation = lottie.loadAnimation({
-          container,
-          renderer: 'svg',
-          loop: true,
-          autoplay: true,
-          path: lottieAnimationPath, // Path to the Lottie JSON file
-        });
-      }
-    }
-
-    // Hide the introduction animation after 2 seconds
-    const introTimer = setTimeout(() => {
-      setShowIntro(false);
-      if (animation) {
-        animation.destroy();
-      }
-    }, 2000); // 2 seconds
-
     // Cleanup function
     return () => {
-      clearTimeout(introTimer);
       if (currentMountRef) {
         currentMountRef.removeChild(renderer.domElement);
       }
       renderer.dispose();
       window.removeEventListener('resize', handleResize);
-      if (animation) {
-        animation.destroy();
-      }
     };
-  }, [modelPath, isRotating, showIntro, lottieAnimationPath]);
+  }, [modelPath, isRotating]);
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
       <div ref={mountRef} style={{ width: '100%', height: '100%' }}></div>
-
-      {showIntro && (
-        <dotlottie-player
-          src="https://lottie.host/059d5c51-e9f2-416c-ad8f-96436f8130b1/xQLWSYfpo4.json"
-          background="transparent"
-          speed="1"
-          loop
-          autoplay
-          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-        ></dotlottie-player>
-      )}
     </div>
   );
 };
