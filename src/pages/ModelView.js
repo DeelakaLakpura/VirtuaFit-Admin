@@ -76,18 +76,7 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
     controls.screenSpacePanning = false;
 
     // Animation loop
-    const animate = () => {
-      requestAnimationFrame(animate);
-    
-      if (modelRef.current && isRotating && shouldUpdate) {
-        modelRef.current.rotation.y += 0.001;
-      }
-    
-      controls.update();
-      renderer.render(scene, camera);
-    };
-
-    animate();
+  
 setShouldUpdate(false);
 
     // Handle window resize
