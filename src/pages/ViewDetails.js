@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FaEdit, FaTrash, FaFileImage, FaFileUpload } from 'react-icons/fa';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 import firebase from 'firebase/compat/app';
 
 import Swal from 'sweetalert2';

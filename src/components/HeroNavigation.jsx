@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faPlus,faImage, faEye, faUser, faBars,faMessage, faUsersViewfinder } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faPlus,faImage, faEye, faBars,faMessage } from '@fortawesome/free-solid-svg-icons';
 import './style.css'; // Custom CSS for additional styling
 
 const LeftNavigation = () => {

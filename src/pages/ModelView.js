@@ -1,5 +1,3 @@
-// src/ModelViewer.js
-
 import React, { useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
@@ -9,20 +7,22 @@ import '@dotlottie/player-component';
 
 const ModelView = ({ modelPath, lottieAnimationPath }) => {
   const mountRef = useRef(null);
-  const modelRef = useRef(null); // To hold reference to the model
-  const [isRotating, setIsRotating] = useState(true); // Start with rotation enabled
-  const [showIntro, setShowIntro] = useState(true); // Show intro initially
+  const modelRef = useRef(null);
+  const [isRotating, setIsRotating] = useState(true);
+  const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
+    const currentMountRef = mountRef.current;
+
     // Set up the scene
     const scene = new THREE.Scene();
 
     // Set up the renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight); // Set to full window size
+    renderer.setSize(window.innerWidth, window.innerHeight); 
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setClearColor(new THREE.Color(0xE4E4E4)); // Set background color to gray
-    mountRef.current.appendChild(renderer.domElement);
+    renderer.setClearColor(new THREE.Color(0xE4E4E4)); 
+    currentMountRef.appendChild(renderer.domElement);
 
     // Set up the camera
     const camera = new THREE.PerspectiveCamera(
@@ -31,7 +31,7 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
       0.1,
       1000
     );
-    camera.position.set(0, 2, 5); // Default camera position
+    camera.position.set(0, 2, 5);
 
     // Set up the light
     const light = new THREE.AmbientLight(0xcccccc, 2);
@@ -45,26 +45,20 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
         const model = gltf.scene;
 
         // Scale and center the model
-        model.scale.set(1, 1, 1); // Adjust scale as needed
+        model.scale.set(1, 1, 1);
 
-        // Center the model in the scene
         const box = new THREE.Box3().setFromObject(model);
         const center = box.getCenter(new THREE.Vector3());
         model.position.sub(center);
 
-        // Store the model reference
         modelRef.current = model;
-
-        // Update the scene with the model
         scene.add(model);
 
-        // Adjust camera position based on model bounding box
+        // Adjust camera position
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
         const cameraDistance = maxDim / (2 * Math.tan(Math.PI * 0.25 * camera.fov / 180));
         camera.position.z = cameraDistance;
-
-        // Adjust the camera to always look at the center of the model
         camera.lookAt(center);
       },
       undefined,
@@ -75,20 +69,19 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
 
     // Set up OrbitControls
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true; // Enable damping (inertia)
-    controls.dampingFactor = 0.65; // Damping factor
-    controls.screenSpacePanning = false; // Do not allow panning
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.65;
+    controls.screenSpacePanning = false;
 
     // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
 
-      // Rotate the model automatically if isRotating is true
       if (modelRef.current && isRotating) {
-        modelRef.current.rotation.y += 0.001; // Adjust rotation speed (slower)
+        modelRef.current.rotation.y += 0.001;
       }
 
-      controls.update(); // Update controls
+      controls.update();
       renderer.render(scene, camera);
     };
     animate();
@@ -111,30 +104,32 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
           renderer: 'svg',
           loop: true,
           autoplay: true,
-          path: '../public/animations/introduction.json' // Path to the Lottie JSON file
+          path: lottieAnimationPath, // Path to the Lottie JSON file
         });
       }
     }
 
-    // Hide the introduction image after 2 seconds
+    // Hide the introduction animation after 2.5 seconds
     const introTimer = setTimeout(() => {
       setShowIntro(false);
       if (animation) {
-        animation.destroy(); // Cleanup Lottie animation
+        animation.destroy();
       }
     }, 2500);
 
     // Cleanup function
     return () => {
       clearTimeout(introTimer);
-      mountRef.current.removeChild(renderer.domElement);
+      if (currentMountRef) {
+        currentMountRef.removeChild(renderer.domElement);
+      }
       renderer.dispose();
       window.removeEventListener('resize', handleResize);
       if (animation) {
-        animation.destroy(); // Cleanup Lottie animation on unmount
+        animation.destroy();
       }
     };
-  }, [modelPath, isRotating, showIntro, lottieAnimationPath]); // Depend on isRotating for re-rendering
+  }, [modelPath, isRotating, showIntro, lottieAnimationPath]);
 
   // Toggle rotation
   const handleToggleRotation = () => {
@@ -144,7 +139,7 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
       <div ref={mountRef} style={{ width: '100%', height: '100%' }}></div>
-      
+
       {showIntro && (
         <div
           id="lottie-container"
@@ -158,13 +153,37 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
             borderRadius: '5px',
             textAlign: 'center',
             zIndex: 1,
-            width: '250px', // Adjust as needed
-            height: '250px' // Adjust as needed
+            width: '250px',
+            height: '250px',
           }}
         >
-    <dotlottie-player src="https://lottie.host/059d5c51-e9f2-416c-ad8f-96436f8130b1/xQLWSYfpo4.json" background="transparent" speed="1" loop autoplay></dotlottie-player>
+          <dotlottie-player
+            src="https://lottie.host/059d5c51-e9f2-416c-ad8f-96436f8130b1/xQLWSYfpo4.json"
+            background="transparent"
+            speed="1"
+            loop
+            autoplay
+          ></dotlottie-player>
         </div>
       )}
+
+      <button
+        onClick={handleToggleRotation}
+        style={{
+          position: 'absolute',
+          top: '20px',
+          right: '20px',
+          zIndex: 2,
+          padding: '10px',
+          backgroundColor: '#000',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+        }}
+      >
+        Toggle Rotation
+      </button>
     </div>
   );
 };
