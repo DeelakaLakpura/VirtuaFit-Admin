@@ -133,7 +133,7 @@ setShouldUpdate(false);
         animation.destroy();
       }
     };
-  }, [modelPath, isRotating, showIntro, lottieAnimationPath]);
+  }, [modelPath, isRotating, showIntro, lottieAnimationPath, shouldUpdate]);
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
