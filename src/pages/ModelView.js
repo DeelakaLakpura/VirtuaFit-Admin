@@ -166,24 +166,6 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
           ></dotlottie-player>
         </div>
       )}
-
-      <button
-        onClick={handleToggleRotation}
-        style={{
-          position: 'absolute',
-          top: '20px',
-          right: '20px',
-          zIndex: 2,
-          padding: '10px',
-          backgroundColor: '#000',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-        }}
-      >
-        Toggle Rotation
-      </button>
     </div>
   );
 };
