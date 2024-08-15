@@ -132,7 +132,7 @@ const ModelView = ({ modelPath, lottieAnimationPath }) => {
         animationRef.current = null;
       }
     };
-  }, [modelPath, lottieAnimationPath]); // Removed unnecessary dependencies
+  }, [modelPath, lottieAnimationPath, showIntro]); // Removed unnecessary dependencies
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
