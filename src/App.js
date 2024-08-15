@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
+
 import HeroNavigation from './components/HeroNavigation';
 import Homepage from './pages/Homepage';
 import UploadDetails from './pages/UploadDetails';
