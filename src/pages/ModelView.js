@@ -8,7 +8,7 @@ import '@dotlottie/player-component';
 const ModelView = ({ modelPath, lottieAnimationPath }) => {
   const mountRef = useRef(null);
   const modelRef = useRef(null);
-  const [isRotating, setIsRotating] = useState(true);
+  const [isRotating] = useState(true);
   const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
